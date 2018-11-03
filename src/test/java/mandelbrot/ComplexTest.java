@@ -177,7 +177,20 @@ public class ComplexTest {
 
   @Test
   void testEquals () {
-    fail("@TODO");
+    Complex complex = new Complex(real, imaginary);
+
+    assertTrue(complex.equals(complex));
+    assertFalse(complex.equals(null));
+    assertFalse(complex.equals(new String("obviously not a complex")));
+    //less obvious
+    assertFalse(Complex.ONE.equals(1));
+    // ok then
+    assertTrue(Complex.ONE.equals(Complex.real(1)));
+
+    assertTrue(complex.equals(new Complex(real, imaginary)));
+    assertFalse(complex.equals(new Complex(imaginary, real)));
+    assertFalse(complex.equals(new Complex(real, real)));
+    assertFalse(complex.equals(new Complex(imaginary, imaginary)));
   }
 
   @Test
