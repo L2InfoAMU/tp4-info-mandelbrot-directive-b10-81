@@ -13,47 +13,48 @@ import java.util.function.Function;
  */
 public class Sequence implements Iterable<Complex> {
 
-    /* The generating function */
-    private final Function<Complex, Complex> f;
+  /* The generating function */
+  private final Function<Complex, Complex> f;
 
-    /* The initial term */
-    private final Complex u0;
-
-
-    /**
-     * Creates a sequence given the initial term and the function.
-     *
-     * @param u0 the first term of the sequence,
-     * @param f  the function over complexes whose repeated application generates the sequence
-     */
-    Sequence(Complex u0, Function<Complex, Complex> f) {
-        this.f = f;
-        this.u0 = u0;
-    }
+  /* The initial term */
+  private final Complex u0;
 
 
-    /**
-     * Creates an iterator iterating all terms of the sequence in order.
-     *
-     * @return an iterator
-     */
+  /**
+   * Creates a sequence given the initial term and the function.
+   *
+   * @param u0 the first term of the sequence,
+   * @param f  the function over complexes whose repeated application generates the sequence
+   */
+  Sequence (Complex u0, Function<Complex, Complex> f) {
+    this.f = f;
+    this.u0 = u0;
+  }
+
+
+  /**
+   * Creates an iterator iterating all terms of the sequence in order.
+   *
+   * @return an iterator
+   */
+  @Override
+  public Iterator<Complex> iterator () {
+    return new SeqIterator();
+  }
+
+  private class SeqIterator implements Iterator<Complex> {
+
+    private Complex current = u0;
+
     @Override
-    public Iterator<Complex> iterator() {
-        return new SeqIterator();
+    public boolean hasNext () {
+      return true;
     }
 
-    private class SeqIterator implements Iterator<Complex> {
-        private Complex current = u0;
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public Complex next() {
-            current = f.apply(current);
-            return current;
-        }
+    @Override
+    public Complex next () {
+      current = f.apply(current);
+      return current;
     }
+  }
 }
