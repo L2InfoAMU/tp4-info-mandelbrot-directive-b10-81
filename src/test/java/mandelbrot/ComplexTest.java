@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ComplexTest {
 
@@ -116,6 +117,25 @@ public class ComplexTest {
   }
 
   @Test
+  void testMultiply () {
+    assertEquals(minusOne, Complex.I.multiply(Complex.I));
+    assertEquals(Complex.ONE, minusOne.multiply(minusOne));
+    assertEquals(Complex.ONE, Complex.I.multiply(minusI));
+    assertEquals(Complex.ZERO, Complex.ZERO.multiply(new Complex(real, imaginary)));
+    assertEquals(Complex.ZERO, new Complex(real, imaginary).multiply(Complex.ZERO));
+  }
+
+  @Test
+  void testSquaredModulus () {
+    fail("@TODO");
+  }
+
+  @Test
+  void testModulus () {
+    fail("@TODO");
+  }
+
+  @Test
   void testDivide () {
     assertEquals(onePlusI, onePlusI.divide(Complex.ONE));
     assertEquals(new Complex(0.5, 0), Complex.ONE.divide(two));
@@ -125,6 +145,21 @@ public class ComplexTest {
   @Test
   void testDivideByZero () {
     assertThrows(ArithmeticException.class, () -> Complex.ONE.divide(Complex.ZERO));
+  }
+
+  @Test
+  void testPow () {
+    fail("@TODO");
+  }
+
+  @Test
+  void testScale () {
+    fail("@TODO");
+  }
+
+  @Test
+  void testEquals () {
+    fail("@TODO");
   }
 
   @Test
