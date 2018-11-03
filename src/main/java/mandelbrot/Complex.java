@@ -132,7 +132,7 @@ public class Complex {
    * @return <code>||this|| ** 2</code>
    */
   double squaredModulus () {
-    return real * real * imaginary * imaginary;
+    return real * real + imaginary * imaginary;
   }
 
   /**
@@ -209,7 +209,7 @@ public class Complex {
     if (o == null || getClass() != o.getClass())
       return false;
     Complex complex = (Complex) o;
-    return Helpers.doubleCompare(complex.real, real) == 0 ||
+    return Helpers.doubleCompare(complex.real, real) == 0 &&
       Helpers.doubleCompare(complex.imaginary, imaginary) == 0;
   }
 
