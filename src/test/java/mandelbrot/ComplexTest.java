@@ -25,12 +25,12 @@ public class ComplexTest {
 
   @Test
   void testConstructor () {
-    assertEquals(0., twoI.real, Helpers.EPSILON);
-    assertEquals(2., twoI.imaginary, Helpers.EPSILON);
-    assertEquals(1., oneMinusI.real, Helpers.EPSILON);
-    assertEquals(-1., oneMinusI.imaginary, Helpers.EPSILON);
-    assertEquals(2., two.real, Helpers.EPSILON);
-    assertEquals(0., two.imaginary, Helpers.EPSILON);
+    assertEquals(0., twoI.getReal(), Helpers.EPSILON);
+    assertEquals(2., twoI.getImaginary(), Helpers.EPSILON);
+    assertEquals(1., oneMinusI.getReal(), Helpers.EPSILON);
+    assertEquals(-1., oneMinusI.getImaginary(), Helpers.EPSILON);
+    assertEquals(2., two.getReal(), Helpers.EPSILON);
+    assertEquals(0., two.getImaginary(), Helpers.EPSILON);
   }
 
   @Test
