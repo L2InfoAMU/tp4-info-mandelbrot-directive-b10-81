@@ -131,6 +131,9 @@ public class ComplexTest {
     assertEquals(1, minusI.squaredModulus());
     assertEquals(4, two.squaredModulus());
     assertEquals(0.25, new Complex(0.5, 0).squaredModulus());
+    Complex complex = new Complex(real, imaginary);
+    Complex complexByConjugate = complex.multiply(complex.conjugate());
+    assertEquals(complexByConjugate.getReal() + complexByConjugate.getImaginary(), complex.squaredModulus());
   }
 
   @Test
@@ -161,7 +164,26 @@ public class ComplexTest {
 
   @Test
   void testPow () {
-    fail("@TODO");
+    Complex complex = new Complex(real, imaginary);
+
+    assertEquals(two, two.pow(1));
+    assertEquals(Complex.ONE, Complex.ZERO.pow(0));
+    assertEquals(Complex.ONE, complex.pow(0));
+    assertEquals(complex, complex.pow(1));
+
+    complex = onePlusI.pow(4);
+    assertEquals(Math.pow(Math.sqrt(2), 4), complex.modulus(), Helpers.EPSILON);
+    assertEquals(-1, complex.getReal() / complex.modulus(), Helpers.EPSILON);
+    assertEquals(0, complex.getImaginary() / complex.modulus(), Helpers.EPSILON);
+
+    for (int i = 0; i < 20; i++) {
+      switch (i % 4) {
+        case 0 : assertEquals(Complex.ONE, Complex.I.pow(i)); break;
+        case 1 : assertEquals(Complex.I, Complex.I.pow(i)); break;
+        case 2 : assertEquals(minusOne, Complex.I.pow(i)); break;
+        case 3 : assertEquals(minusI, Complex.I.pow(i)); break;
+      }
+    }
   }
 
   @Test
