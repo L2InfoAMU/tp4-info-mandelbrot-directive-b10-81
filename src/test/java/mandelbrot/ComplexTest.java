@@ -127,7 +127,12 @@ public class ComplexTest {
 
   @Test
   void testSquaredModulus () {
-    fail("@TODO");
+    assertEquals(0, Complex.ZERO.squaredModulus());
+    assertEquals(1, Complex.ONE.squaredModulus());
+    assertEquals(1, Complex.I.squaredModulus());
+    assertEquals(1, minusI.squaredModulus());
+    assertEquals(4, two.squaredModulus());
+    assertEquals(0.25, new Complex(0.5, 0).squaredModulus());
   }
 
   @Test
