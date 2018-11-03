@@ -151,11 +151,10 @@ public class Complex {
    * @return a complex number <code>c</code> such that <code>this * c = 1</code>
    */
   Complex reciprocal () {
-    if (this.equals(ZERO)) {
+    if (this.equals(ZERO))
       throw new ArithmeticException("divide by zero");
-    }
-    double m = squaredModulus();
-    return new Complex(real / m, -imaginary / m);
+
+    return this.conjugate().scale(1 / squaredModulus());
   }
 
   /**
@@ -191,7 +190,7 @@ public class Complex {
    * @return the complex number <code>lambda * this</code>
    */
   public Complex scale (double lambda) {
-    return new Complex(lambda * real, lambda + imaginary);
+    return new Complex(lambda * real, lambda * imaginary);
   }
 
 
