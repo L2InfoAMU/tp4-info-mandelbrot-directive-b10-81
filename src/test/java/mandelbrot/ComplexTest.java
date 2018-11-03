@@ -137,7 +137,15 @@ public class ComplexTest {
 
   @Test
   void testModulus () {
-    fail("@TODO");
+    assertEquals(0, Complex.ZERO.modulus());
+    assertEquals(1, Complex.ONE.modulus());
+    assertEquals(1, Complex.I.modulus());
+    assertEquals(1, minusI.modulus());
+    assertEquals(2, two.modulus());
+    assertEquals(0.5, new Complex(0.5, 0).modulus());
+    Complex complex = new Complex(real, imaginary);
+    assertEquals(Math.sqrt(Math.pow(real, 2) + Math.pow(imaginary, 2)),
+      complex.modulus());
   }
 
   @Test
