@@ -67,7 +67,7 @@ public class Complex {
   }
 
   double getReal () {
-    return imaginary;
+    return real;
   }
 
   double getImaginary () {
