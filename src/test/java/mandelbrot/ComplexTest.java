@@ -69,6 +69,15 @@ public class ComplexTest {
   }
 
   @Test
+  void testReal () {
+    assertEquals(Complex.ZERO, Complex.real(0));
+    assertEquals(minusOne, Complex.real(-1));
+    assertEquals(two, Complex.real(2));
+    assertEquals(-12, Complex.real(real).getReal(), Helpers.EPSILON);
+    assertEquals(0, Complex.real(real).getImaginary(), Helpers.EPSILON);
+  }
+
+  @Test
   void testNegate () {
     assertEquals(minusOne, Complex.ONE.negate());
     assertEquals(Complex.I, minusI.negate());
