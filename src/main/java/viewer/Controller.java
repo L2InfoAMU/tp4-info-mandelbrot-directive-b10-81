@@ -64,7 +64,8 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
-    colorPicker.setValue(Color.gray(0.2));
+    colorPicker.setStyle("-fx-color-label-visible: false;");
+    colorPicker.setValue(Color.GREEN);
     // set default colors
     colorPicker.getCustomColors().addAll(
       Color.gray(0.2),
