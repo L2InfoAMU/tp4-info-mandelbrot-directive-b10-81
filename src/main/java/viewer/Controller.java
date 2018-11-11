@@ -1,11 +1,17 @@
 package viewer;
 
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
+import javafx.event.ActionEvent;
+import javafx.collections.ObservableList;
+
 import mandelbrot.Complex;
 import mandelbrot.Mandelbrot;
 
@@ -26,6 +32,12 @@ public class Controller implements Initializable {
   private static final int SUPERSAMPLING = 3;
 
   @FXML
+  private Button renderButton;
+
+  @FXML
+  private ColorPicker colorPicker;
+
+  @FXML
   private Canvas canvas; /* The canvas to draw on */
 
   private Camera camera = Camera.camera0; /* The view to display */
@@ -37,17 +49,12 @@ public class Controller implements Initializable {
   private double[] breakpoints = {0., 0.75, 0.85, 0.95, 0.99, 1.0};
 
   /* colors of the histogram */
-  private Color[] colors =
-    {Color.gray(0.2),
-      Color.gray(0.7),
-      Color.rgb(55, 118, 145),
-      Color.rgb(63, 74, 132),
-      Color.rgb(145, 121, 82),
-      Color.rgb(250, 250, 200)
-    };
+
+  /* customcolors index  */
+  private int colorId = 0;
 
   /* algorithm to generate the distribution of colors */
-  private Histogram histogram = new Histogram(breakpoints, colors);
+  private Histogram histogram;
 
   /**
    * Method called when the graphical interface is loaded
@@ -57,25 +64,58 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
-    final Thread renderThread = new Thread(renderTask, "rendering-task");
-    renderThread.setDaemon(true);
-    renderThread.start();
+    //colorPicker.setValue(Color.gray(0.2));
+    // set default colors
+    colorPicker.getCustomColors().addAll(
+      Color.gray(0.2),
+      Color.gray(0.7),
+      Color.rgb(55, 118, 145),
+      Color.rgb(63, 74, 132),
+      Color.rgb(145, 121, 82),
+      Color.rgb(250, 250, 200)
+    );
+
+    getPixelsTask.setOnSucceeded(event -> {
+      renderPixels(getPixelsTask.getValue());
+      System.out.println("done!");
+    });
+
+    getPixelsTask.setOnFailed(event -> System.out.println("fail!"));
   }
 
-  private Task<Void> renderTask = new Task<>() {
+  @FXML
+  private void setColor () {
+    colorId = colorId % colorPicker.getCustomColors().size();
+    colorPicker.getCustomColors().set(colorId++, colorPicker.getValue());
+  }
+
+  // @TODO progressbar
+  // @FIXME
+  private Task<ObservableList<Pixel>> getPixelsTask = new Task<>() {
     @Override
-    protected Void call () throws Exception {
-      render();
-      return null;
+    protected ObservableList<Pixel> call () throws Exception {
+      ObservableList<Pixel> pixels = getPixels();
+
+      return pixels;
     }
   };
 
   /**
    * compute and display the image.
    */
+  @FXML
   private void render () {
-    List<Pixel> pixels = getPixels();
-    renderPixels(pixels);
+    Color[] colors;
+    renderButton.setDisable(true);
+    colorPicker.setDisable(true);
+
+    colors = new Color[colorPicker.getCustomColors().size()];
+    colorPicker.getCustomColors().toArray(colors);
+    histogram = new Histogram(breakpoints, colors);
+
+    final Thread renderThread = new Thread(getPixelsTask, "before-rendering-task");
+    renderThread.setDaemon(true);
+    renderThread.start();
   }
 
   /**
@@ -128,13 +168,13 @@ public class Controller implements Initializable {
    *
    * @return the list of pixels
    */
-  private List<Pixel> getPixels () {
+  private ObservableList<Pixel> getPixels () {
     int width = (int) canvas.getWidth();
     int height = (int) canvas.getHeight();
-    List<SubPixel> subPixels =
-      new ArrayList<>(width * height * SUPERSAMPLING * SUPERSAMPLING);
-    List<Pixel> pixels =
-      new ArrayList<>(width * height);
+    ObservableList<SubPixel> subPixels =
+      FXCollections.observableArrayList(new ArrayList<>(width * height * SUPERSAMPLING * SUPERSAMPLING));
+    ObservableList<Pixel> pixels =
+      FXCollections.observableArrayList(new ArrayList<>(width * height));
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         Pixel pix = preparePixel(x, y);

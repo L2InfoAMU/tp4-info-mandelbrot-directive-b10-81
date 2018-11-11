@@ -1,8 +1,24 @@
 <?import javafx.scene.layout.GridPane?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Button?>
+<!--<?import javafx.event.ActionEvent ?>-->
+
 <GridPane fx:controller="viewer.Controller"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
 
-    <Canvas fx:id="canvas" width="1200" height="900"/>
+    <HBox fx:id="toolbar" prefHeight="25" GridPane.rowIndex="0" spacing="6">
+        <children>
+            <Button fx:id="renderButton" text="render" onAction="#render"/>
+            <ColorPicker fx:id="colorPicker" onAction="#setColor" />
+        </children>
+    </HBox>
+
+    <Canvas fx:id="canvas" width="1200" height="900" GridPane.rowIndex="1"/>
+
+    <HBox fx:id="statusbar" prefWidth="1200" prefHeight="25" GridPane.rowIndex="2">
+        <!--@TODO-->
+    </HBox>
 </GridPane>
