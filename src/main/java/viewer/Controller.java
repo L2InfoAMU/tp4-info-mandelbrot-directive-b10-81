@@ -1,5 +1,6 @@
 package viewer;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -56,8 +57,18 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
-    render();
+    final Thread renderThread = new Thread(renderTask, "rendering-task");
+    renderThread.setDaemon(true);
+    renderThread.start();
   }
+
+  private Task<Void> renderTask = new Task<>() {
+    @Override
+    protected Void call () throws Exception {
+      render();
+      return null;
+    }
+  };
 
   /**
    * compute and display the image.
