@@ -9,7 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
-import javafx.event.ActionEvent;
+//import javafx.event.ActionEvent;
 import javafx.collections.ObservableList;
 
 import mandelbrot.Complex;
@@ -64,7 +64,7 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
-    //colorPicker.setValue(Color.gray(0.2));
+    colorPicker.setValue(Color.gray(0.2));
     // set default colors
     colorPicker.getCustomColors().addAll(
       Color.gray(0.2),
