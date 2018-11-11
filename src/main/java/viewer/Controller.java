@@ -86,12 +86,13 @@ public class Controller implements Initializable {
 
   @FXML
   private void setColor () {
-    colorId = colorId % colorPicker.getCustomColors().size();
+    colorId = colorId % breakpoints.length;
     colorPicker.getCustomColors().set(colorId++, colorPicker.getValue());
+    if (colorPicker.getCustomColors().size() > breakpoints.length) // @FIXME
+      colorPicker.getCustomColors().remove(colorPicker.getCustomColors().size() -1);
   }
 
   // @TODO progressbar
-  // @FIXME
   private Task<ObservableList<Pixel>> getPixelsTask = new Task<>() {
     @Override
     protected ObservableList<Pixel> call () throws Exception {
@@ -110,7 +111,7 @@ public class Controller implements Initializable {
     renderButton.setDisable(true);
     colorPicker.setDisable(true);
 
-    colors = new Color[colorPicker.getCustomColors().size()];
+    colors = new Color[breakpoints.length];
     colorPicker.getCustomColors().toArray(colors);
     histogram = new Histogram(breakpoints, colors);
 
