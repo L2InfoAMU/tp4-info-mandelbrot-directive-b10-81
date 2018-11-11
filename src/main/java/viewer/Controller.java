@@ -1,6 +1,6 @@
 package viewer;
 
-import javafx.collections.FXCollections;
+//import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,7 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 //import javafx.event.ActionEvent;
-import javafx.collections.ObservableList;
+//import javafx.collections.ObservableList;
 
 import mandelbrot.Complex;
 import mandelbrot.Mandelbrot;
@@ -85,7 +85,7 @@ public class Controller implements Initializable {
   }
 
   @FXML
-  private void setColor () {
+  private void setColorAction () {
     colorId = colorId % breakpoints.length;
     colorPicker.getCustomColors().set(colorId++, colorPicker.getValue());
     if (colorPicker.getCustomColors().size() > breakpoints.length) // @FIXME
@@ -93,11 +93,10 @@ public class Controller implements Initializable {
   }
 
   // @TODO progressbar
-  private Task<ObservableList<Pixel>> getPixelsTask = new Task<>() {
+  private Task<List<Pixel>> getPixelsTask = new Task<>() {
     @Override
-    protected ObservableList<Pixel> call () throws Exception {
-      ObservableList<Pixel> pixels = getPixels();
-
+    protected List<Pixel> call () throws Exception {
+      List<Pixel> pixels = getPixels();
       return pixels;
     }
   };
@@ -106,7 +105,7 @@ public class Controller implements Initializable {
    * compute and display the image.
    */
   @FXML
-  private void render () {
+  private void renderAction () {
     Color[] colors;
     renderButton.setDisable(true);
     colorPicker.setDisable(true);
@@ -170,13 +169,12 @@ public class Controller implements Initializable {
    *
    * @return the list of pixels
    */
-  private ObservableList<Pixel> getPixels () {
+  private List<Pixel> getPixels () {
     int width = (int) canvas.getWidth();
     int height = (int) canvas.getHeight();
-    ObservableList<SubPixel> subPixels =
-      FXCollections.observableArrayList(new ArrayList<>(width * height * SUPERSAMPLING * SUPERSAMPLING));
-    ObservableList<Pixel> pixels =
-      FXCollections.observableArrayList(new ArrayList<>(width * height));
+    List<SubPixel> subPixels =
+      new ArrayList<>(width * height * SUPERSAMPLING * SUPERSAMPLING);
+    List<Pixel> pixels = new ArrayList<>(width * height);
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         Pixel pix = preparePixel(x, y);
