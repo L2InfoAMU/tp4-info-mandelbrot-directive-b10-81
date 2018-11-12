@@ -4,10 +4,13 @@ package viewer;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 //import javafx.event.ActionEvent;
 //import javafx.collections.ObservableList;
@@ -39,6 +42,11 @@ public class Controller implements Initializable {
 
   @FXML
   private Canvas canvas; /* The canvas to draw on */
+
+  @FXML
+  private HBox statusbar;
+
+  private ProgressBar progressBar;
 
   private Camera camera = Camera.camera0; /* The view to display */
 
@@ -75,6 +83,11 @@ public class Controller implements Initializable {
       Color.rgb(145, 121, 82),
       Color.rgb(250, 250, 200)
     );
+
+    progressBar = new ProgressBar(0);
+    progressBar.setPrefSize(200, 25);
+    statusbar.setPadding(new Insets(5, 5, 5, 5));
+    statusbar.getChildren().add(progressBar);
 
     getPixelsTask.setOnSucceeded(event -> {
       renderPixels(getPixelsTask.getValue());
