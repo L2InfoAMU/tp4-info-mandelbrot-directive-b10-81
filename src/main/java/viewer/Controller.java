@@ -1,6 +1,6 @@
 package viewer;
 
-//import javafx.collections.FXCollections;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,8 +12,8 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-//import javafx.event.ActionEvent;
-//import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+
 
 import mandelbrot.Complex;
 import mandelbrot.Mandelbrot;
@@ -46,20 +46,16 @@ public class Controller implements Initializable {
   @FXML
   private HBox statusbar;
 
+  private ColorIndicator colorIndicator;
+
   private ProgressBar progressBar;
 
   private Camera camera = Camera.camera0; /* The view to display */
 
   private Mandelbrot mandelbrot = new Mandelbrot(); /* the algorithm */
 
-
   /* positions of colors in the histogram */
   private double[] breakpoints = {0., 0.75, 0.85, 0.95, 0.99, 1.0};
-
-  /* colors of the histogram */
-
-  /* customcolors index  */
-  private int colorId = 0;
 
   /* algorithm to generate the distribution of colors */
   private Histogram histogram;
@@ -74,20 +70,22 @@ public class Controller implements Initializable {
   public void initialize (URL location, ResourceBundle resources) {
     colorPicker.setStyle("-fx-color-label-visible: false;");
     colorPicker.setValue(Color.GREEN);
+
     // set default colors
-    colorPicker.getCustomColors().addAll(
+    colorIndicator = new ColorIndicator(FXCollections.observableArrayList(
       Color.gray(0.2),
       Color.gray(0.7),
       Color.rgb(55, 118, 145),
       Color.rgb(63, 74, 132),
       Color.rgb(145, 121, 82),
       Color.rgb(250, 250, 200)
-    );
+    ));
 
     progressBar = new ProgressBar(0);
     progressBar.setPrefSize(200, 25);
+
     statusbar.setPadding(new Insets(5, 5, 5, 5));
-    statusbar.getChildren().add(progressBar);
+    statusbar.getChildren().addAll(colorIndicator, progressBar);
 
     getPixelsTask.setOnSucceeded(event -> {
       renderPixels(getPixelsTask.getValue());
@@ -98,11 +96,8 @@ public class Controller implements Initializable {
   }
 
   @FXML
-  private void setColorAction () {
-    colorId = colorId % breakpoints.length;
-    colorPicker.getCustomColors().set(colorId++, colorPicker.getValue());
-    if (colorPicker.getCustomColors().size() > breakpoints.length) // @FIXME
-      colorPicker.getCustomColors().remove(colorPicker.getCustomColors().size() -1);
+  private void setColorAction (ActionEvent event) {
+    colorIndicator.addCustomColor(colorPicker.getValue());
   }
 
   // @TODO progressbar
@@ -118,14 +113,11 @@ public class Controller implements Initializable {
    * compute and display the image.
    */
   @FXML
-  private void renderAction () {
-    Color[] colors;
+  private void renderAction (ActionEvent event) {
     renderButton.setDisable(true);
     colorPicker.setDisable(true);
 
-    colors = new Color[breakpoints.length];
-    colorPicker.getCustomColors().toArray(colors);
-    histogram = new Histogram(breakpoints, colors);
+    histogram = new Histogram(breakpoints, colorIndicator.toColorArray());
 
     final Thread renderThread = new Thread(getPixelsTask, "before-rendering-task");
     renderThread.setDaemon(true);
