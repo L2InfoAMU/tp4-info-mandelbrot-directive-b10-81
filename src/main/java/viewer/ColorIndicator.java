@@ -2,6 +2,7 @@ package viewer;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -16,6 +17,7 @@ public class ColorIndicator extends HBox {
     //super();
     this.colors = colors;
     setSpacing(2);
+    setAlignment(Pos.CENTER_LEFT);
     display();
     colors.addListener((ListChangeListener) e -> display());
   }

@@ -21,7 +21,7 @@
         <!--<Canvas fx:id="canvas" width="1200" height="900"/>-->
     </center>
     <bottom>
-        <HBox fx:id="statusbar" spacing="10" fillHeight="true" prefWidth="1200" prefHeight="35" alignment="BOTTOM_RIGHT">
+        <HBox fx:id="statusbar" spacing="10" fillHeight="true" prefWidth="1200" prefHeight="35" alignment="CENTER_RIGHT">
             <!--@TODO-->
         </HBox>
     </bottom>

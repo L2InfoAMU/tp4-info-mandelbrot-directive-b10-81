@@ -11,9 +11,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import mandelbrot.Complex;
 import mandelbrot.Mandelbrot;
 
@@ -37,18 +40,22 @@ public class Controller implements Initializable {
   private BorderPane borderPane;
 
   @FXML
+  private ToolBar toolbar;
+
+  @FXML
   private Button renderButton;
 
   @FXML
   private ColorPicker colorPicker;
 
-  //@FXML
-  private Canvas canvas; /* The canvas to draw on */
+  private ColorIndicator colorIndicator;
+
+  private Canvas canvas = new Canvas(1200, 900); /* The canvas to draw on */
 
   @FXML
   private HBox statusbar;
 
-  private ColorIndicator colorIndicator;
+  private Text statusText = new Text();
 
   private ProgressBar progressBar;
 
@@ -70,21 +77,19 @@ public class Controller implements Initializable {
   private Task<Void> renderTask = new Task<>() {
     @Override
     protected Void call () throws Exception {
-
-      // @TODO display messages
       updateMessage("init pixels list ...");
       List<Pixel> pixels = getPixels();
       updateMessage("rendering ...");
 
-      // Platform.runLater(() -> {
       double workdone = 0;
       GraphicsContext context = canvas.getGraphicsContext2D();
+
       for (Pixel pix : pixels) {
         pix.render(context);
         workdone += 1;
         updateProgress(workdone, pixels.size());
       }
-      // });
+      updateMessage("done!");
       return null;
     }
   };
@@ -97,7 +102,6 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
-    canvas = new Canvas(1200, 900);
     colorPicker.setStyle("-fx-color-label-visible: false;");
     colorPicker.setValue(Color.GREEN);
 
@@ -110,16 +114,20 @@ public class Controller implements Initializable {
       Color.rgb(145, 121, 82),
       Color.rgb(250, 250, 200)
     ));
+    toolbar.getItems().add(colorIndicator);
 
     progressBar = new ProgressBar(0);
     progressBar.setPrefSize(200, 25);
 
+    statusText.setTextAlignment(TextAlignment.CENTER);
+
     statusbar.setPadding(new Insets(5, 5, 5, 5));
-    statusbar.getChildren().addAll(colorIndicator, progressBar);
+    statusbar.getChildren().addAll(statusText, progressBar);
 
     renderTask.setOnSucceeded(event -> {
       borderPane.setCenter(canvas);
       progressBar.progressProperty().unbind();
+      statusText.textProperty().unbind();
       System.out.println("done!");
     });
 
@@ -142,6 +150,7 @@ public class Controller implements Initializable {
     histogram = new Histogram(breakpoints, colorIndicator.toColorArray());
 
     progressBar.progressProperty().bind(renderTask.progressProperty());
+    statusText.textProperty().bind(renderTask.messageProperty());
 
     final Thread renderThread = new Thread(renderTask, "rendering-task");
     renderThread.setDaemon(true);
