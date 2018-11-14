@@ -2,6 +2,7 @@ package viewer;
 
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -10,11 +11,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.event.ActionEvent;
-
-
 import mandelbrot.Complex;
 import mandelbrot.Mandelbrot;
 
@@ -35,12 +34,15 @@ public class Controller implements Initializable {
   private static final int SUPERSAMPLING = 3;
 
   @FXML
+  private BorderPane borderPane;
+
+  @FXML
   private Button renderButton;
 
   @FXML
   private ColorPicker colorPicker;
 
-  @FXML
+  //@FXML
   private Canvas canvas; /* The canvas to draw on */
 
   @FXML
@@ -61,6 +63,33 @@ public class Controller implements Initializable {
   private Histogram histogram;
 
   /**
+   * display each pixel
+   *
+   * @param pixels the list of all the pixels to display
+   */
+  private Task<Void> renderTask = new Task<>() {
+    @Override
+    protected Void call () throws Exception {
+
+      // @TODO display messages
+      updateMessage("init pixels list ...");
+      List<Pixel> pixels = getPixels();
+      updateMessage("rendering ...");
+
+      // Platform.runLater(() -> {
+      double workdone = 0;
+      GraphicsContext context = canvas.getGraphicsContext2D();
+      for (Pixel pix : pixels) {
+        pix.render(context);
+        workdone += 1;
+        updateProgress(workdone, pixels.size());
+      }
+      // });
+      return null;
+    }
+  };
+
+  /**
    * Method called when the graphical interface is loaded
    *
    * @param location  location
@@ -68,6 +97,7 @@ public class Controller implements Initializable {
    */
   @Override
   public void initialize (URL location, ResourceBundle resources) {
+    canvas = new Canvas(1200, 900);
     colorPicker.setStyle("-fx-color-label-visible: false;");
     colorPicker.setValue(Color.GREEN);
 
@@ -87,27 +117,19 @@ public class Controller implements Initializable {
     statusbar.setPadding(new Insets(5, 5, 5, 5));
     statusbar.getChildren().addAll(colorIndicator, progressBar);
 
-    getPixelsTask.setOnSucceeded(event -> {
-      renderPixels(getPixelsTask.getValue());
+    renderTask.setOnSucceeded(event -> {
+      borderPane.setCenter(canvas);
+      progressBar.progressProperty().unbind();
       System.out.println("done!");
     });
 
-    getPixelsTask.setOnFailed(event -> System.out.println("fail!"));
+    renderTask.setOnFailed(event -> System.out.println("fail!"));
   }
 
   @FXML
   private void setColorAction (ActionEvent event) {
     colorIndicator.addCustomColor(colorPicker.getValue());
   }
-
-  // @TODO progressbar
-  private Task<List<Pixel>> getPixelsTask = new Task<>() {
-    @Override
-    protected List<Pixel> call () throws Exception {
-      List<Pixel> pixels = getPixels();
-      return pixels;
-    }
-  };
 
   /**
    * compute and display the image.
@@ -119,21 +141,11 @@ public class Controller implements Initializable {
 
     histogram = new Histogram(breakpoints, colorIndicator.toColorArray());
 
-    final Thread renderThread = new Thread(getPixelsTask, "before-rendering-task");
+    progressBar.progressProperty().bind(renderTask.progressProperty());
+
+    final Thread renderThread = new Thread(renderTask, "rendering-task");
     renderThread.setDaemon(true);
     renderThread.start();
-  }
-
-  /**
-   * display each pixel
-   *
-   * @param pixels the list of all the pixels to display
-   */
-  private void renderPixels (List<Pixel> pixels) {
-    GraphicsContext context = canvas.getGraphicsContext2D();
-    for (Pixel pix : pixels) {
-      pix.render(context);
-    }
   }
 
   /**
